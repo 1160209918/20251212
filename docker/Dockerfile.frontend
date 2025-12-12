@@ -15,10 +15,10 @@ FROM node:${NODE_VERSION} AS builder
 WORKDIR /build
 
 COPY web/package*.json ./
-RUN npm ci --legacy-peer-deps
+RUN npm ci --legacy-peer-deps || (echo "npm ci failed" && exit 1)
 
 COPY web/ ./
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build || (echo "Build failed. Checking for errors..." && ls -la && exit 1)
 
 # ──────────────────────────────────────────────────────────────
 # Runtime Stage (Nginx)

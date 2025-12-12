@@ -64,10 +64,17 @@ jobs:
             --platform linux/amd64 \
             --progress=plain \
             --no-cache \
-            . 2>&1 | tee frontend-build.log || true
+            . 2>&1 | tee frontend-build.log
 
+          EXIT_CODE=$?
           echo ""
-          echo "=== Frontend build exit code: $? ==="
+          echo "=== Frontend build exit code: $EXIT_CODE ==="
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo ""
+            echo "=== Last 100 lines of frontend build log ==="
+            tail -100 frontend-build.log
+          fi
 
       - name: Upload build logs
         if: always()
